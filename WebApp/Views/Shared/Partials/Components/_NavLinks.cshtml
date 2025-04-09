@@ -1,0 +1,12 @@
+﻿<div class="side">
+    <nav class="nav-links">
+        <a asp-action="Projects" asp-controller="Projects" class="nav-link @(Context.Request.Path == "/projects" ? "active": "")">
+            <i class="fa-duotone fa-solid fa-briefcase"></i>
+            <span>Projects</span>
+        </a>
+        <a asp-action="Members" asp-controller="Admin" class="nav-link @(Context.Request.Path == "/admin/members" ? "active": "")">
+            <i class="fa-duotone fa-solid fa-user-group"></i>
+            <span>Team Members</span>
+        </a>
+    </nav>
+</div>
