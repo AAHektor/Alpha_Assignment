@@ -5,8 +5,8 @@
         <div class="project-image">
             <img src="/images/add-project-logo.svg" alt="template project" class="project-card-img">
         </div>
-        <span class="project-name">Website Redesign</span>
-        <span class="client-name">GitLab Inc.</span>
+        <span class="project-name">@Model.ProjectName</span>
+        <span class="client-name">@Model.ProjectClient</span>
 
         <button class="btn-actions" type="button" data-type="dropdown" data-target="#project-dropdown-@Model.Id">
             <img src="/images/more.svg" alt="">
@@ -33,7 +33,7 @@
     </div>
 
     <div class="card-body">
-        <p>It is necessary to develop a website redesign in a corporate style.</p>
+        <p>@Html.Raw(Model.ProjectDescription)</p>
     </div>
     <div class="card-footer"></div>
 </div>

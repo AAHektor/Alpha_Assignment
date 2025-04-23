@@ -694,6 +694,7 @@ a {
         background-color: var(--dropdown-background-color);
         box-shadow: var(--box-shadow);
         border-radius: var(--border-radius);
+        z-index: 1000;
     }
 
 .dropdown {
