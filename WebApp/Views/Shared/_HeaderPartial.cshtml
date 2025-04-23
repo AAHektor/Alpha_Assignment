@@ -1,0 +1,19 @@
+﻿<header class="header">
+    <div>
+        <form method="get" as-controller="" novalidate class="form-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" class="form-search-input" placeholder="Search anything...">
+        </form>
+    </div>
+    <div class="top-group">
+        <div id="settings-container">
+            <button type="button" data-type="dropdown" class="btn-settings">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+        </div>
+        
+    </div>
+
+	@await Html.PartialAsync("Dropdowns/_AccountDropdownPartial")
+
+</header>

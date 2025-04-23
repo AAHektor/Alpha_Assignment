@@ -1,14 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApp.Models;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+public class ProjectsController : Controller
 {
-    [Route("projects")]
-    public class ProjectsController : Controller
+    [Route("admin/projects")]
+    public IActionResult Index()
     {
-        [Route("")]
-        public IActionResult Projects()
+        var viewModel = new ProjectsViewModel()
         {
-            return View();
-        }
+            Projects = [new(), new()]
+        };
+
+        return View(viewModel); 
     }
 }

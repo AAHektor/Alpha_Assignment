@@ -1,0 +1,32 @@
+﻿@using WebApp.Models
+@model ProjectsViewModel
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<main>
+    <div id="projects" class="page">
+        <div class="page-header">
+            <h1>Projects</h1>
+            <button class="btn-blue btn-projects" id="add-project" data-type="modal" data-target="#add-project-modal">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Project</span>
+            </button>
+        </div>
+
+        <section class="project-list">
+            @if(Model.Projects != null && Model.Projects.Any())
+            {
+                @foreach (var project in Model.Projects)
+                {
+                    @await Html.PartialAsync("ListItems/_ProjectListItemPartial", project)
+                }
+            }
+
+        </section>
+
+    </div>
+</main>
+
+@await Html.PartialAsync("Modals/_AddProjectModalPartial", Model.AddProjectFormData)
+@await Html.PartialAsync("Modals/_EditProjectModalPartial", Model.EditProjectFormData)

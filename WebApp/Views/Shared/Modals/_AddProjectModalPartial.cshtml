@@ -1,0 +1,85 @@
+﻿@model AddProjectViewModel
+
+<section id="add-project-modal" class="modal">
+    <div class="card">
+        <div class="card-header">
+            <h3>Add Project</h3>
+            <button type="button" class="btn-close" data-type="close" data-target="#add-project-modal"></button>
+        </div>
+        <div class="card-body">
+
+            <form asp-controller="" asp-action="" method="post" novalidate>
+                <div class="image-preview-container">
+                    <img src="/images/add-project-logo.svg" alt="">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Project Name</label>
+                    <input class="form-input" type="" placeholder="Project Name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Client Name</label>
+                    <input class="form-input" type="" placeholder="Client Name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+
+                    <!-- Hidden textarea for form submission -->
+                    <textarea id="add-project-description" class="hide-textarea"></textarea>
+
+                    <!-- Quill editor with dynamic attributes -->
+                    <div id="add-project-description-wysiwyg-editor"
+                         class="wysiwyg-editor"
+                         data-quill-editor="add-project-description-wysiwyg-editor"
+                         data-quill-toolbar="add-project-description-wysiwyg-toolbar"
+                         data-quill-target="add-project-description">
+                    </div>
+
+                    <!-- Toolbar -->
+                    <div id="add-project-description-wysiwyg-toolbar" class="wysiwyg-toolbar">
+                        <span class="ql-formats">
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-align" value=""></button>
+                            <button class="ql-align" value="center"></button>
+                            <button class="ql-align" value="right"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-list" value="bullet"></button>
+                            <button class="ql-list" value="ordered"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-link"></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-horizontal-group">
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input class="form-input" type="date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date</label>
+                        <input class="form-input" type="date">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Budget</label>
+                    <div class="form-input-extended">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                        <input class="form-input" type="" placeholder="0">
+                    </div>
+                </div>
+
+                <button class="btn btn-blue" id="btn-create">Create</button>
+            </form>
+        </div>
+    </div>
+</section>
