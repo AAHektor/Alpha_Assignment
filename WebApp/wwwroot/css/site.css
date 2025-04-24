@@ -668,8 +668,16 @@ a {
 
 #add-project-modal,
 #edit-project-modal {
-    /* no additional styles */
+    
 }
+
+    .image-preview-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
 
 #btn-create {
     margin-top: 1.5rem;
