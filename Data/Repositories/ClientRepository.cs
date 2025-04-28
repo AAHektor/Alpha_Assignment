@@ -9,7 +9,7 @@ public interface  IClientRepository : IBaseRepository<ClientEntity>
     
 }
 
-public class ClientRepository(AppDbContext context) : BaseRepository<ClientEntity>(context)
+public class ClientRepository(AppDbContext context) : BaseRepository<ClientEntity>(context), IClientRepository
 {
 }
 

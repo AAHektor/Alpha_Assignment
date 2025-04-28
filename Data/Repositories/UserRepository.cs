@@ -3,7 +3,11 @@ using Data.Entities;
 
 namespace Data.Repositories;
 
-public class UserRepository(AppDbContext context) : BaseRepository<UserEntity>(context)
+public interface IUserRepository : IBaseRepository<UserEntity>
+{
+
+}
+public class UserRepository(AppDbContext context) : BaseRepository<UserEntity>(context), IUserRepository
 {
 }
 

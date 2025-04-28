@@ -3,7 +3,13 @@ using Data.Entities;
 
 namespace Data.Repositories;
 
-public class ProjectRepository(AppDbContext context) : BaseRepository<ProjectEntity>(context)
+
+public interface IProjectRepository : IBaseRepository<ProjectEntity>
+{
+
+}
+
+public class ProjectRepository(AppDbContext context) : BaseRepository<ProjectEntity>(context), IProjectRepository
 {
 }
 
