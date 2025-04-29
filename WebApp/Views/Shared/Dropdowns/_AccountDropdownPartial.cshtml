@@ -1,4 +1,6 @@
-﻿<div id="account-container">
+﻿@using System.Security.Claims
+
+<div id="account-container">
     <button type="button" data-type="dropdown" data-target="#account-dropdown" class="btn-account">
         <img src="/images/users/user-template-male-green.svg" alt="template-avatar">
     </button>
@@ -6,12 +8,14 @@
         <div class="dropdown-header">
             <div class="account-name">
                 <img src="/images/users/user-template-male-green.svg" alt="template-avatar">
-                <span>Aron Hektor</span>
+                <span>@User.FindFirst("FullName")?.Value</span>
             </div>
             <div class="dropdown-body">
                 <button class="btn-logout">
                     <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Logout</span>
+                    <span>
+                        <a asp-controller="Auth" asp-action="Logout">Logout</a>
+                    </span>
                 </button>
             </div>
         </div>

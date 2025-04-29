@@ -49,9 +49,11 @@ public class UserService(IUserRepository userRepository, UserManager<UserEntity>
 
     public async Task<UserResult> CreateUserAsync(SignUpFormData formData)
     {
+
+
         if (formData == null)
             return new UserResult { Succeeded = false, StatusCode = 400, Error = "form data can't be null" };
-        
+
         var existsResult = await _userRepository.ExistsAsync(x => x.Email == formData.Email);
         if (existsResult.Succeeded)
             return new UserResult { Succeeded = false, StatusCode = 409, Error = "User with this email already exists" };
@@ -60,23 +62,50 @@ public class UserService(IUserRepository userRepository, UserManager<UserEntity>
         {
             var userEntity = new UserEntity
             {
-                FullName = formData.FullName,
-                Email = formData.Email,
-
+                FullName = formData.FullName!,
+                Email = formData.Email!,
+                UserName = formData.Email! 
             };
 
             var result = await _userManager.CreateAsync(userEntity, formData.Password);
 
-            return result.Succeeded
-                ? new UserResult { Succeeded = true, StatusCode = 201 }
-                : new UserResult { Succeeded = false, StatusCode = 500, Error = "Unable to create user." };
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    Debug.WriteLine($"[UserService] Error creating user: {error.Description}");
+                }
+            }
+
+
+            if (!result.Succeeded)
+            {
+                var errorMessages = string.Join("; ", result.Errors.Select(e => e.Description));
+                Debug.WriteLine($"User creation failed: {errorMessages}");
+                return new UserResult
+                {
+                    Succeeded = false,
+                    StatusCode = 500,
+                    Error = errorMessages
+                };
+            }
+
+            return new UserResult
+            {
+                Succeeded = true,
+                StatusCode = 201
+            };
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
+            Console.WriteLine($"[UserService] Exception: {ex.Message}");
+            if (ex.InnerException != null)
+                Console.WriteLine($"[UserService] InnerException: {ex.InnerException.Message}");
+
             return new UserResult { Succeeded = false, StatusCode = 500, Error = ex.Message };
         }
-
-
     }
+
+
 }

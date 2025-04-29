@@ -21,9 +21,18 @@
                 @await Html.PartialAsync("_HeaderPartial")
             <main>
                 @RenderBody()
+                <div style="padding: 1rem; background: #eee; margin-top: 2rem;">
+                    <strong>Inloggad:</strong> @User.Identity.IsAuthenticated
+                    <br />
+                    <strong>Namn:</strong> @User.Identity.Name
+                </div>
+
             </main>
         </div>
     </div>
+
+    
+
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

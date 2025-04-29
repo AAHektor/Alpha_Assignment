@@ -1,15 +1,20 @@
 ﻿using Business.Models;
 using Business.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
+    [Authorize]
+    [Route("admin/projects")]
     public class ProjectsController(IProjectService projectService) : Controller
     {
         private readonly IProjectService _projectService = projectService;
 
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var projectsResult = await _projectService.GetProjectsAsync();
@@ -20,7 +25,7 @@ namespace Presentation.Controllers
                 {
                     Id = p.Id,
                     ProjectName = p.ProjectName,
-                    ProjectClient = p.ClientName, 
+                    ProjectClient = p.ClientId,  
                     ProjectDescription = p.Description,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
@@ -32,29 +37,33 @@ namespace Presentation.Controllers
             return View(viewModel);
         }
 
-        [HttpPost]
+        [HttpPost("add")]
         public async Task<IActionResult> Add(AddProjectViewModel model)
         {
             if (!ModelState.IsValid)
                 return Json(new { success = false, error = "Invalid data" });
 
-            var addProjectFormData = new AddProjectFormData
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var formData = new AddProjectFormData
             {
                 ProjectName = model.ProjectName,
-                ClientName = model.ClientName,
+                ClientId = model.ClientId,
                 Description = model.Description,
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
                 Budget = model.Budget,
-                StatusId = model.StatusId
+                StatusId = model.StatusId ?? 1,
+                UserId = userId 
             };
 
-            var result = await _projectService.CreateProjectAsync(addProjectFormData);
+            var result = await _projectService.CreateProjectAsync(formData);
 
-            return Json(new { success = result.Succeeded });
+            return Json(new { success = result.Succeeded, error = result.Error });
         }
 
-        [HttpPost]
+
+        [HttpPost("update")]
         public async Task<IActionResult> Update(EditProjectViewModel model)
         {
             if (!ModelState.IsValid)
@@ -68,7 +77,7 @@ namespace Presentation.Controllers
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
                 Budget = model.Budget,
-                ClientName = model.ClientName,
+                ClientId = model.ClientId,
                 StatusId = model.StatusId
             };
 
@@ -77,7 +86,7 @@ namespace Presentation.Controllers
             return Json(new { success = result.Succeeded });
         }
 
-        [HttpPost]
+        [HttpPost("delete")]
         public async Task<IActionResult> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))

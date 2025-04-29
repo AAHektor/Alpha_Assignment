@@ -1,5 +1,6 @@
 ﻿using Data.Contexts;
 using Data.Models;
+using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -34,15 +35,23 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
         try
         {
-            _table.Update(entity);
+            await _table.AddAsync(entity);
             await _context.SaveChangesAsync();
             return new RepositoryResult<bool> { Succeeded = true, StatusCode = 201 };
 
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.Message);
-            return new RepositoryResult<bool> { Succeeded = false, StatusCode = 500, Error = ex.Message };
+            var errorMessage = ex.InnerException?.Message ?? ex.Message;
+
+            Debug.WriteLine(errorMessage);
+
+            return new RepositoryResult<bool>
+            {
+                Succeeded = false,
+                StatusCode = 500,
+                Error = errorMessage
+            };
         }
     }
 
@@ -61,6 +70,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
             : query.OrderBy(sortBy);
 
         var entities = await query.Select(selector).ToListAsync();
+
 
         return new RepositoryResult<IEnumerable<TSelect>> { Succeeded = true, StatusCode = 200, Result = entities };
     }

@@ -21,7 +21,7 @@ builder.Services.ConfigureApplicationCookie(x =>
     x.AccessDeniedPath = "/auth/denied";
     x.Cookie.HttpOnly = true;
     x.Cookie.IsEssential = true;
-    x.Cookie.Expiration = TimeSpan.FromHours(1);
+    x.ExpireTimeSpan = TimeSpan.FromHours(1);
     x.SlidingExpiration = true;
 });
 
@@ -41,10 +41,11 @@ var app = builder.Build();
 
 app.UseHsts();  
 app.UseHttpsRedirection();
-app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseRouting();
+app.UseAuthentication();   // ? MÅSTE komma före
+app.UseAuthorization();    // ? Måste vara efter
+
 
 app.MapStaticAssets();
 

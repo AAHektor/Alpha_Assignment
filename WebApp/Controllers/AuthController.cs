@@ -47,23 +47,26 @@ namespace Presentation.Controllers
             return View(model);
         }
 
-        public IActionResult SignIn(string returnUrl = "~/")
+        public IActionResult SignIn(string returnUrl = "/admin/projects")
         {
             ViewBag.ErrorMessage = null;
-
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
-        [HttpPost]
 
-        public async Task<IActionResult> SignIn(SignInViewModel model, string returnUrl = "~/")
+
+
+        [HttpPost]
+        public async Task<IActionResult> SignIn(SignInViewModel model, string returnUrl = "/admin/projects")
+
         {
             ViewBag.ErrorMessage = null;
             ViewBag.ReturnUrl = returnUrl;
 
 
             if (!ModelState.IsValid)
-                return View(model);
+                return View("SignIn", model); ;
 
             var signInFormData = new SignInFormData
             {
@@ -79,10 +82,15 @@ namespace Presentation.Controllers
             }
 
             ViewBag.ErrorMessage = result.Error;
-            return View(model);
+            return View("SignIn", model);
         }
 
-
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await _authService.SignOutAsync();
+            return RedirectToAction("SignIn", "Auth");
+        }
 
     }
 }

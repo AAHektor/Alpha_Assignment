@@ -35,7 +35,7 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
             StartDate = formData.StartDate,
             EndDate = formData.EndDate,
             Budget = formData.Budget,
-            ClientName = formData.ClientName,
+            ClientId = formData.ClientId,
             UserId = formData.UserId,
             StatusId = formData.StatusId.ToString(),
 
@@ -106,7 +106,7 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
         projectEntity.EndDate = formData.EndDate;
         projectEntity.Budget = formData.Budget;
         projectEntity.StatusId = formData.StatusId.ToString();
-        projectEntity.ClientName = formData.ClientName;
+        projectEntity.ClientId = formData.ClientId;
 
         var updateResult = await _projectRepository.UpdateAsync(projectEntity);
 

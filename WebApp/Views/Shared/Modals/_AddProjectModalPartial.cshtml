@@ -8,26 +8,28 @@
         </div>
         <div class="card-body">
 
-            <form asp-controller="" asp-action="" method="post" novalidate>
+            <form id="add-project-form" asp-controller="Projects" asp-action="Add" method="post" novalidate>
                 <div class="image-preview-container">
                     <img src="/images/add-project-logo.svg" alt="">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Project Name</label>
-                    <input class="form-input" type="" placeholder="Project Name">
+                    <input class="form-input" name="ProjectName" type="text" placeholder="Project Name">
+
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Client Name</label>
-                    <input class="form-input" type="" placeholder="Client Name">
+                    <input class="form-input" name="ClientId" type="text" placeholder="Client ID"> <!-- Ändra till select senare -->
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Description</label>
 
                     <!-- Hidden textarea for form submission -->
-                    <textarea id="add-project-description" class="hide-textarea"></textarea>
+                    <textarea class="form-input" name="Description" id="add-project-description" hidden></textarea>
+
 
                     <!-- Quill editor with dynamic attributes -->
                     <div id="add-project-description-wysiwyg-editor"
@@ -62,11 +64,11 @@
                 <div class="form-horizontal-group">
                     <div class="form-group">
                         <label class="form-label">Start Date</label>
-                        <input class="form-input" type="date">
+                        <input class="form-input" name="StartDate" type="date">
                     </div>
                     <div class="form-group">
                         <label class="form-label">End Date</label>
-                        <input class="form-input" type="date">
+                        <input class="form-input" name="EndDate" type="date">
                     </div>
                 </div>
 
@@ -74,9 +76,19 @@
                     <label class="form-label">Budget</label>
                     <div class="form-input-extended">
                         <i class="fa-solid fa-dollar-sign"></i>
-                        <input class="form-input" type="" placeholder="0">
+                        <input class="form-input" name="Budget" type="number" placeholder="0">
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-input" name="StatusId">
+                        <option value="1">Started</option>
+                        <option value="2">In Progress</option>
+                        <option value="3">Completed</option>
+                    </select>
+                </div>
+
 
                 <button class="btn btn-blue" id="btn-create">Create</button>
             </form>

@@ -22,7 +22,7 @@ namespace Presentation.Models
         public decimal? Budget { get; set; }
 
         [Required]
-        public string ClientName { get; set; } = null!;
+        public string ClientId { get; set; } = null!;
 
         [Required]
         public int StatusId { get; set; }
