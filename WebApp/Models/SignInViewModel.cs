@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApp.Models;
+namespace Presentation.Models;
 
-public class LoginViewModel
+public class SignInViewModel
 {
 
     [Required]
@@ -17,6 +17,6 @@ public class LoginViewModel
     [Display(Name = "Password", Prompt = "Enter password")]
     public string Password { get; set; } = null!;
 
-    public bool RememberMe { get; set; }
+    public bool ConfirmPassword { get; set; }
 
 }

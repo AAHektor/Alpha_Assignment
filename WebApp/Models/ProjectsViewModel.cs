@@ -1,4 +1,4 @@
-﻿namespace WebApp.Models;
+﻿namespace Presentation.Models;
 
 public class ProjectsViewModel
 {

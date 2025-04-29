@@ -1,43 +1,88 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WebApp.Models;
+﻿using Business.Models;
+using Business.Services;
+using Microsoft.AspNetCore.Mvc;
+using Presentation.Models;
 
-namespace WebApp.Controllers
+namespace Presentation.Controllers
 {
     public class AuthController : Controller
     {
-        [Route("auth/signup")]
-        public IActionResult Signup()
+        private readonly IAuthService _authService;
+
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+        }
+
+
+
+        public IActionResult SignUp()
         {
              return View();
         }
 
         [HttpPost]
-        [Route("auth/signup")]
 
-        public IActionResult Signup(SignUpViewModel model)
+        public async Task<IActionResult> SignUp(SignUpViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            return View();
+            var signUpFormData = new SignUpFormData
+            {
+                FullName = model.FullName,
+                Email = model.Email,
+                Password = model.Password,
+                ConfirmPassword = model.ConfirmPassword
+            };
+
+            var result = await _authService.SignUpAsync(signUpFormData);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            ViewBag.ErrorMessage = result.Error;
+            return View(model);
         }
 
-        [Route("auth/login")]
-
-        public IActionResult Login()
+        public IActionResult SignIn(string returnUrl = "~/")
         {
+            ViewBag.ErrorMessage = null;
+
             return View();
         }
 
         [HttpPost]
-        [Route("auth/login")]
-        public IActionResult Login(LoginViewModel model)
+
+        public async Task<IActionResult> SignIn(SignInViewModel model, string returnUrl = "~/")
         {
+            ViewBag.ErrorMessage = null;
+            ViewBag.ReturnUrl = returnUrl;
+
+
             if (!ModelState.IsValid)
                 return View(model);
 
-            return View();
+            var signInFormData = new SignInFormData
+            {
+                Email = model.Email,
+                Password = model.Password,
+            };
+
+            var result = await _authService.SignInAsync(signInFormData);
+
+            if (result.Succeeded)
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            ViewBag.ErrorMessage = result.Error;
+            return View(model);
         }
+
+
 
     }
 }

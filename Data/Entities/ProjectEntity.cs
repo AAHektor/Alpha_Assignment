@@ -17,7 +17,7 @@ public class ProjectEntity
     public DateTime Created { get; set; } = DateTime.Now;
 
     [ForeignKey(nameof(Client))]
-    public string ClientId { get; set; } = null!;
+    public string ClientName { get; set; } = null!;
     public ClientEntity Client { get; set; } = null!;
 
     [ForeignKey(nameof(User))]

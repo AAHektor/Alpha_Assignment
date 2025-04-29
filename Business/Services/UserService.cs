@@ -3,10 +3,17 @@ using Data.Entities;
 using Data.Models;
 using Data.Repositories;
 using Microsoft.AspNetCore.Identity;
+using System.Diagnostics;
 
 namespace Business.Services;
 
-public class UserService(IUserRepository userRepository, UserManager<UserEntity> userManager)
+public interface IUserService
+{
+    Task<UserResult> CreateUserAsync(SignUpFormData formData);
+    Task<UserResult> GetUsersAsync();
+}
+
+public class UserService(IUserRepository userRepository, UserManager<UserEntity> userManager) : IUserService
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly UserManager<UserEntity> _userManager = userManager;
@@ -38,5 +45,38 @@ public class UserService(IUserRepository userRepository, UserManager<UserEntity>
             StatusCode = result.StatusCode,
             Result = mappedUsers
         };
+    }
+
+    public async Task<UserResult> CreateUserAsync(SignUpFormData formData)
+    {
+        if (formData == null)
+            return new UserResult { Succeeded = false, StatusCode = 400, Error = "form data can't be null" };
+        
+        var existsResult = await _userRepository.ExistsAsync(x => x.Email == formData.Email);
+        if (existsResult.Succeeded)
+            return new UserResult { Succeeded = false, StatusCode = 409, Error = "User with this email already exists" };
+
+        try
+        {
+            var userEntity = new UserEntity
+            {
+                FullName = formData.FullName,
+                Email = formData.Email,
+
+            };
+
+            var result = await _userManager.CreateAsync(userEntity, formData.Password);
+
+            return result.Succeeded
+                ? new UserResult { Succeeded = true, StatusCode = 201 }
+                : new UserResult { Succeeded = false, StatusCode = 500, Error = "Unable to create user." };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return new UserResult { Succeeded = false, StatusCode = 500, Error = ex.Message };
+        }
+
+
     }
 }
