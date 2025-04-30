@@ -56,7 +56,7 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,7 +67,8 @@ namespace Data.Migrations
                 name: "Statuses",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     StatusName = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -194,7 +195,7 @@ namespace Data.Migrations
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    StatusId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    StatusId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -257,12 +258,6 @@ namespace Data.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Clients_ClientName",
-                table: "Clients",
-                column: "ClientName",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ClientId",

@@ -84,7 +84,7 @@ public class StatusService(IStatusRepository statusRepository) : IStatusService
 
     public async Task<StatusResult<Status>> GetStatusByIdAsync(int id)
     {
-        var response = await _statusRepository.GetAsync(x => x.Id == id.ToString());
+        var response = await _statusRepository.GetAsync(x => x.Id == id);
 
         if (!response.Succeeded || response.Result == null)
         {
@@ -117,7 +117,7 @@ public class StatusService(IStatusRepository statusRepository) : IStatusService
 
     public async Task<StatusResult> UpdateStatusAsync(UpdateStatusFormData formData)
     {
-        var response = await _statusRepository.GetAsync(x => x.Id == formData.Id.ToString());
+        var response = await _statusRepository.GetAsync(x => x.Id == formData.Id);
 
         if (!response.Succeeded || response.Result == null)
         {
@@ -141,7 +141,7 @@ public class StatusService(IStatusRepository statusRepository) : IStatusService
 
     public async Task<StatusResult> DeleteStatusAsync(int id)
     {
-        var response = await _statusRepository.GetAsync(x => x.Id == id.ToString());
+        var response = await _statusRepository.GetAsync(x => x.Id == id);
 
         if (!response.Succeeded || response.Result == null)
         {

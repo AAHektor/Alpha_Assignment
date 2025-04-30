@@ -30,7 +30,7 @@ public class ClientService(IClientRepository clientRepository) : IClientService
         var mappedClients = result.Result.Select(entity => new Client
         {
             Id = entity.Id,
-            ClientId = entity.ClientId
+            ClientId = entity.DisplayName
         });
 
         return new ClientResult

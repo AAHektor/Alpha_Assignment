@@ -1,7 +1,11 @@
 ﻿using Business.Models;
 using Business.Services;
+using Data.Contexts;
+using Data.Entities;
+using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Presentation.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -10,9 +14,20 @@ namespace Presentation.Controllers
 {
     [Authorize]
     [Route("admin/projects")]
-    public class ProjectsController(IProjectService projectService) : Controller
+    public class ProjectsController : Controller
     {
-        private readonly IProjectService _projectService = projectService;
+        private readonly AppDbContext _context;
+
+
+        private readonly IProjectService _projectService;
+
+
+        public ProjectsController(IProjectService projectService, AppDbContext context)
+        {
+            _projectService = projectService;
+            _context = context;
+        }
+
 
         [HttpGet("")]
         public async Task<IActionResult> Index()
@@ -25,7 +40,7 @@ namespace Presentation.Controllers
                 {
                     Id = p.Id,
                     ProjectName = p.ProjectName,
-                    ProjectClient = p.ClientId,  
+                    ProjectClient = p.Client.DisplayName,
                     ProjectDescription = p.Description,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
@@ -40,27 +55,68 @@ namespace Presentation.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> Add(AddProjectViewModel model)
         {
+            ModelState.Remove("ClientId");
+
             if (!ModelState.IsValid)
-                return Json(new { success = false, error = "Invalid data" });
+            {
+                return Json(new { success = false, debugStatus = 1, error = "ModelState invalid", modelState = ModelState });
+            }
+
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            string clientId;
+
+            if (!string.IsNullOrWhiteSpace(model.ClientId) && Guid.TryParse(model.ClientId, out _))
+            {
+                // ClientId är redan ett GUID från dropdown
+                clientId = model.ClientId;
+            }
+            else if (!string.IsNullOrWhiteSpace(model.ClientName))
+            {
+                // Sök om klienten redan finns
+                var existingClient = _context.Clients.FirstOrDefault(c => c.DisplayName == model.ClientName.Trim());
+
+                if (existingClient != null)
+                {
+                    clientId = existingClient.Id; // ✅ Använd befintligt ID
+                }
+                else
+                {
+                    var newClient = new ClientEntity
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        DisplayName = model.ClientName.Trim()
+                    };
+                    _context.Clients.Add(newClient);
+                    await _context.SaveChangesAsync();
+                    clientId = newClient.Id; // ✅ Använd nytt ID
+                }
+            }
+            else
+            {
+                return Json(new { success = false, error = "Ingen klient vald eller angiven." });
+            }
+
 
             var formData = new AddProjectFormData
             {
                 ProjectName = model.ProjectName,
-                ClientId = model.ClientId,
+                ClientId = clientId,
                 Description = model.Description,
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
                 Budget = model.Budget,
                 StatusId = model.StatusId ?? 1,
-                UserId = userId 
+                UserId = userId
             };
 
             var result = await _projectService.CreateProjectAsync(formData);
 
             return Json(new { success = result.Succeeded, error = result.Error });
+
         }
+
 
 
         [HttpPost("update")]
@@ -87,14 +143,14 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("delete")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete([FromBody] DeleteProjectRequestViewModel request)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(request.Id))
                 return Json(new { success = false, error = "Invalid project ID" });
 
-            var result = await _projectService.DeleteProjectAsync(id);
-
+            var result = await _projectService.DeleteProjectAsync(request.Id);
             return Json(new { success = result.Succeeded });
         }
+
     }
 }

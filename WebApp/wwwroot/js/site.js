@@ -93,4 +93,68 @@
             if (dropdown) dropdown.classList.toggle('show');
         }
     });
+
+    // ---------------------------------------------
+    // FORMULÄRINLÄMNING: Skicka POST och redirecta
+    // ---------------------------------------------
+    const addProjectForm = document.getElementById("add-project-form");
+    if (addProjectForm) {
+        addProjectForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const textarea = document.getElementById("add-project-description");
+            const editor = document.querySelector("[data-quill-editor='add-project-description-wysiwyg-editor']");
+            if (editor && textarea) {
+                const quill = Quill.find(editor);
+                if (quill) {
+                    textarea.value = quill.root.innerHTML;
+                }
+            }
+
+            const formData = new FormData(addProjectForm);
+
+            const response = await fetch("/admin/projects/add", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                window.location.href = "/admin/projects";
+            } else {
+                alert("Kunde inte skapa projekt: " + (result.error ?? "Okänt fel."));
+            }
+        });
+    }
+    // ---------------------------------------------
+    // RADERA PROJEKT
+    // ---------------------------------------------
+    document.addEventListener('click', async (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            const projectId = deleteBtn.getAttribute('data-id');
+
+            if (confirm("Are you sure you want to delete this project?")) {
+                const response = await fetch('/admin/projects/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: projectId })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Ta bort projektkortet från DOM
+                    const projectCard = deleteBtn.closest('.project.card');
+                    if (projectCard) {
+                        projectCard.remove();
+                    }
+                } else {
+                    alert('Error deleting project: ' + (result.error || 'Unknown error'));
+                }
+            }
+        }
+    });
+
 });

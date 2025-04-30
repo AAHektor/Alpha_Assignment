@@ -43,8 +43,8 @@ app.UseHsts();
 app.UseHttpsRedirection();
 
 app.UseRouting();
-app.UseAuthentication();   // ? MÅSTE komma före
-app.UseAuthorization();    // ? Måste vara efter
+app.UseAuthentication();   
+app.UseAuthorization();   
 
 
 app.MapStaticAssets();

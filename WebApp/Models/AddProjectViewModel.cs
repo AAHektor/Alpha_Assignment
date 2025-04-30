@@ -9,8 +9,11 @@ public class AddProjectViewModel
     public string ProjectName { get; set; } = null!;
 
 
-    [Required]
-    public string ClientId { get; set; } = null!; 
+    public string? ClientId { get; set; }
+
+
+
+    public string? ClientName { get; set; }
 
     public string? Description { get; set; }
 
@@ -21,7 +24,9 @@ public class AddProjectViewModel
 
     public decimal? Budget { get; set; }
 
+    [Required]
     public int? StatusId { get; set; }
+
 
 
 }

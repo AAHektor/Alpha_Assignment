@@ -25,7 +25,7 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
     {
         if (formData == null)
         {
-            return new ProjectResult { Succeeded = false, StatusCode = 400, Error = "Not all required fields are supplied. " };
+            // return new ProjectResult { Succeeded = false, StatusCode = 400, Error = "Not all required fields are supplied. " };
         }
 
         var projectEntity = new ProjectEntity
@@ -37,7 +37,7 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
             Budget = formData.Budget,
             ClientId = formData.ClientId,
             UserId = formData.UserId,
-            StatusId = formData.StatusId.ToString(),
+            StatusId = formData.StatusId,
 
         };
         var result = await _projectRepository.AddAsync(projectEntity);
@@ -105,7 +105,7 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
         projectEntity.StartDate = formData.StartDate;
         projectEntity.EndDate = formData.EndDate;
         projectEntity.Budget = formData.Budget;
-        projectEntity.StatusId = formData.StatusId.ToString();
+        projectEntity.StatusId = formData.StatusId;
         projectEntity.ClientId = formData.ClientId;
 
         var updateResult = await _projectRepository.UpdateAsync(projectEntity);
