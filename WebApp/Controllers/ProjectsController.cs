@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Presentation.Models;
 using System.Security.Claims;
@@ -17,22 +18,23 @@ namespace Presentation.Controllers
     public class ProjectsController : Controller
     {
         private readonly AppDbContext _context;
-
-
+        private readonly IClientService _clientService;
         private readonly IProjectService _projectService;
 
-
-        public ProjectsController(IProjectService projectService, AppDbContext context)
+        public ProjectsController(IProjectService projectService, IClientService clientService, AppDbContext context)
         {
             _projectService = projectService;
+            _clientService = clientService;
             _context = context;
         }
-
 
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var projectsResult = await _projectService.GetProjectsAsync();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var projectsResult = await _projectService.GetProjectsByUserAsync(userId);
+
 
             var viewModel = new ProjectsViewModel
             {
@@ -45,8 +47,9 @@ namespace Presentation.Controllers
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
                     Budget = p.Budget,
-                    Status = p.Status.StatusName
-                })
+                    Status = p.Status.StatusName,
+                    StatusId = p.StatusId
+                }).ToList()
             };
 
             return View(viewModel);
@@ -130,7 +133,7 @@ namespace Presentation.Controllers
                 Id = model.Id,
                 ProjectName = model.ProjectName,
                 Description = model.Description,
-                StartDate = model.StartDate,
+                StartDate = model.StartDate.Value,
                 EndDate = model.EndDate,
                 Budget = model.Budget,
                 ClientId = model.ClientId,
@@ -152,5 +155,59 @@ namespace Presentation.Controllers
             return Json(new { success = result.Succeeded });
         }
 
+        public async Task<IActionResult> Edit(string id)
+        {
+            var projectResult = await _projectService.GetProjectByIdAsync(id);
+
+            if (!projectResult.Succeeded || projectResult.Result == null)
+                return NotFound();
+
+            var project = projectResult.Result;
+
+
+            var model = new EditProjectViewModel
+            {
+                Id = project.Id,
+                ProjectName = project.ProjectName,
+                ClientId = project.ClientId,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                Budget = project.Budget,
+                StatusId = project.StatusId,
+                Clients = await GetClientsSelectListAsync()
+            };
+
+            return View(model);
+        }
+
+        private async Task<List<SelectListItem>> GetClientsSelectListAsync()
+        {
+            var clients = await _clientService.GetAllClientsAsync();
+            return clients.Select(c => new SelectListItem
+            {
+                Value = c.Id,
+                Text = c.Name
+            }).ToList();
+        }
+
+        [HttpGet("api/project/{id}")]
+        public async Task<IActionResult> GetProject(string id)
+        {
+            var projectResult = await _projectService.GetProjectByIdAsync(id);
+            if (!projectResult.Succeeded || projectResult.Result == null)
+                return NotFound();
+
+            var clients = await _clientService.GetAllClientsAsync();
+
+            return Json(new
+            {
+                project = projectResult.Result,
+                clients = clients
+            });
+        }
+
     }
+
+
 }

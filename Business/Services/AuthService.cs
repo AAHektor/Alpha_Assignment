@@ -31,11 +31,25 @@ public class AuthService(IUserService userService, SignInManager<UserEntity> sig
         if (!checkPassword)
             return new AuthResult { Succeeded = false, StatusCode = 401, Error = "Invalid password" };
 
-        await _signInManager.SignInAsync(user, formData.IsPersistent);
+        // ✅ Logga ut eventuell gammal användare
+        await _signInManager.SignOutAsync();
 
-        // ✅ Returnera ett lyckat resultat!
+        // ✅ Skapa nya claims inklusive FullName
+        var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        new Claim(ClaimTypes.Email, user.Email ?? ""),
+        new Claim("FullName", user.FullName ?? "")
+    };
+
+        var identity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await _signInManager.Context.SignInAsync(IdentityConstants.ApplicationScheme, principal);
+
         return new AuthResult { Succeeded = true, StatusCode = 200 };
     }
+
 
 
 

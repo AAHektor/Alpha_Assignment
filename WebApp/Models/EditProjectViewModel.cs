@@ -12,10 +12,12 @@ namespace Presentation.Models
         [Required]
         public string ProjectName { get; set; } = null!;
 
+
+
         public string? Description { get; set; }
 
         [Required]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
 
@@ -23,6 +25,9 @@ namespace Presentation.Models
 
         [Required]
         public string ClientId { get; set; } = null!;
+
+        public List<SelectListItem> Clients { get; set; } = new();
+
 
         [Required]
         public int StatusId { get; set; }

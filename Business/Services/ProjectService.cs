@@ -2,6 +2,7 @@
 using Data.Entities;
 using Data.Models;
 using Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Business.Services;
@@ -11,7 +12,9 @@ public interface IProjectService
     Task<ProjectResult> CreateProjectAsync(AddProjectFormData formData);
     Task<ProjectResult> DeleteProjectAsync(string id);
     Task<ProjectResult<ProjectEntity>> GetProjectAsync(string id);
+    Task<ProjectResult<ProjectModel>> GetProjectByIdAsync(string id);
     Task<ProjectResult<IEnumerable<ProjectEntity>>> GetProjectsAsync();
+    Task<ProjectResult<IEnumerable<ProjectEntity>>> GetProjectsByUserAsync(string userId);
     Task<ProjectResult> UpdateProjectAsync(UpdateProjectFormData formData);
 }
 
@@ -45,6 +48,39 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
             ? new ProjectResult { Succeeded = true, StatusCode = 201 }
             : new ProjectResult { Succeeded = false, StatusCode = 400, Error = result.Error };
     }
+
+    public async Task<ProjectResult<IEnumerable<ProjectEntity>>> GetProjectsByUserAsync(string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return new ProjectResult<IEnumerable<ProjectEntity>>
+            {
+                Succeeded = false,
+                StatusCode = 400,
+                Error = "Invalid user ID"
+            };
+        }
+
+        var response = await _projectRepository.GetAllAsync(
+            selector: x => x,
+            orderByDescending: true,
+            sortBy: s => s.Created,
+            where: p => p.UserId == userId,
+            includes: [
+                include => include.User,
+            include => include.Status,
+            include => include.Client
+            ]
+        );
+
+        return new ProjectResult<IEnumerable<ProjectEntity>>
+        {
+            Succeeded = true,
+            StatusCode = 200,
+            Result = response.Result
+        };
+    }
+
 
     public async Task<ProjectResult<IEnumerable<ProjectEntity>>> GetProjectsAsync()
     {
@@ -84,6 +120,8 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
 
 
     }
+
+
 
     public async Task<ProjectResult> UpdateProjectAsync(UpdateProjectFormData formData)
     {
@@ -135,6 +173,48 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
             ? new ProjectResult { Succeeded = true, StatusCode = 200 }
             : new ProjectResult { Succeeded = false, StatusCode = 500, Error = deleteResult.Error };
     }
+
+    public async Task<ProjectResult<ProjectModel>> GetProjectByIdAsync(string id)
+    {
+        var project = await _projectRepository.GetAsync(
+            where: x => x.Id == id,
+            includes: [
+                include => include.Client,
+            include => include.Status,
+            include => include.User
+            ]
+        );
+
+        if (!project.Succeeded || project.Result == null)
+        {
+            return new ProjectResult<ProjectModel>
+            {
+                Succeeded = false,
+                StatusCode = 404,
+                Error = $"Project with ID '{id}' not found."
+            };
+        }
+
+        var entity = project.Result;
+
+        return new ProjectResult<ProjectModel>
+        {
+            Succeeded = true,
+            StatusCode = 200,
+            Result = new ProjectModel
+            {
+                Id = entity.Id,
+                ProjectName = entity.ProjectName,
+                Description = entity.Description,
+                StartDate = entity.StartDate,
+                EndDate = entity.EndDate,
+                Budget = entity.Budget,
+                ClientId = entity.ClientId,
+                StatusId = entity.StatusId
+            }
+        };
+    }
+
 
 
 }

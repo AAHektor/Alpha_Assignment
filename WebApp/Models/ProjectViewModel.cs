@@ -10,4 +10,6 @@ public class ProjectViewModel
     public DateTime? EndDate { get; set; }
     public decimal? Budget { get; set; }
     public string Status { get; set; } = null!;
+    public int StatusId { get; set; }
+
 }

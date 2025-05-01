@@ -1,5 +1,7 @@
 ﻿@using Presentation.Models
 @model ProjectsViewModel
+@using System.Linq
+
 @{
     ViewData["Title"] = "Projects";
 }
@@ -8,10 +10,30 @@
     <div id="projects" class="page">
         <div class="page-header">
             <h1>Projects</h1>
+
             <button class="btn-blue btn-projects" id="add-project" data-type="modal" data-target="#add-project-modal">
                 <i class="fa-solid fa-plus"></i>
                 <span>Add Project</span>
             </button>
+        </div>
+        <div class="project-filter">
+            <ul class="filter-tabs">
+                <li>
+                    <button class="filter-btn active" data-status="all">
+                        <span>ALL</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="filter-btn" data-status="1">
+                        <span>STARTED</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="filter-btn" data-status="2">
+                        <span>COMPLETED</span>
+                    </button>
+                </li>
+            </ul>
         </div>
 
         <section class="project-list">

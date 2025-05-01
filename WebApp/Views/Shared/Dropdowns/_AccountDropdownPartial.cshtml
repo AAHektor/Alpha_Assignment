@@ -11,12 +11,10 @@
                 <span>@User.FindFirst("FullName")?.Value</span>
             </div>
             <div class="dropdown-body">
-                <button class="btn-logout">
+                <a asp-controller="Auth" asp-action="Logout" class="btn-logout">
                     <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>
-                        <a asp-controller="Auth" asp-action="Logout">Logout</a>
-                    </span>
-                </button>
+                    <span>Logout</span>
+                </a>
             </div>
         </div>
     </div>

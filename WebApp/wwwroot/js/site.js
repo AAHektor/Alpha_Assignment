@@ -94,8 +94,82 @@
         }
     });
 
+   
     // ---------------------------------------------
-    // FORMULÄRINLÄMNING: Skicka POST och redirecta
+    // RADERA PROJEKT
+    // ---------------------------------------------
+    document.addEventListener('click', async (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            const projectId = deleteBtn.getAttribute('data-id');
+
+            if (confirm("Are you sure you want to delete this project?")) {
+                const response = await fetch('/admin/projects/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: projectId })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Ta bort projektkortet från DOM
+                    const projectCard = deleteBtn.closest('.project.card');
+                    if (projectCard) {
+                        projectCard.remove();
+                    }
+                } else {
+                    alert('Error deleting project: ' + (result.error || 'Unknown error'));
+                }
+            }
+        }
+    });
+
+    // ---------------------------------------------
+    // HÄMTA OCH FYLLA EDIT-MODALEN
+    // ---------------------------------------------
+
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const projectId = btn.getAttribute("data-id");
+
+            const res = await fetch(`/admin/projects/api/project/${projectId}`);
+            const data = await res.json();
+
+            // Fyll formulärfält
+            document.querySelector("#edit-project-modal input[name='Id']").value = data.project.id;
+            document.querySelector("#edit-project-modal input[name='ProjectName']").value = data.project.projectName;
+            document.querySelector("#edit-project-modal textarea[name='Description']").value = data.project.description || "";
+            document.querySelector("#edit-project-modal input[name='StartDate']").value = data.project.startDate?.split("T")[0] || "";
+            document.querySelector("#edit-project-modal input[name='EndDate']").value = data.project.endDate?.split("T")[0] || "";
+            document.querySelector("#edit-project-modal input[name='Budget']").value = data.project.budget ?? "";
+            document.querySelector("#edit-project-modal select[name='StatusId']").value = data.project.statusId;
+
+            const quill = Quill.find(document.querySelector("[data-quill-editor='edit-project-description-wysiwyg-editor']"));
+            if (quill) {
+                quill.root.innerHTML = data.project.description || "";
+                document.getElementById("edit-project-description").value = data.project.description || "";
+            }
+
+            // Fyll klient-dropdown
+            const clientSelect = document.querySelector("#edit-project-modal select[name='ClientId']");
+            clientSelect.innerHTML = '<option value="">-- Select Client --</option>';
+            data.clients.forEach(client => {
+                const option = document.createElement("option");
+                option.value = client.id;
+                option.textContent = client.name;
+                if (client.id === data.project.clientId)
+                    option.selected = true;
+                clientSelect.appendChild(option);
+            });
+
+            // Visa modalen
+            document.querySelector("#edit-project-modal").classList.add("show");
+        });
+    });
+
+    // ---------------------------------------------
+    // FORMULÄRINLÄMNING: Skicka POST och redirecta (ADD)
     // ---------------------------------------------
     const addProjectForm = document.getElementById("add-project-form");
     if (addProjectForm) {
@@ -127,34 +201,64 @@
             }
         });
     }
+
     // ---------------------------------------------
-    // RADERA PROJEKT
+    // FORMULÄRINLÄMNING: Skicka POST och redirecta (EDIT)
     // ---------------------------------------------
-    document.addEventListener('click', async (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-            const projectId = deleteBtn.getAttribute('data-id');
+    const editProjectForm = document.getElementById("edit-project-form");
+    if (editProjectForm) {
+        editProjectForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-            if (confirm("Are you sure you want to delete this project?")) {
-                const response = await fetch('/admin/projects/delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: projectId })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // Ta bort projektkortet från DOM
-                    const projectCard = deleteBtn.closest('.project.card');
-                    if (projectCard) {
-                        projectCard.remove();
-                    }
-                } else {
-                    alert('Error deleting project: ' + (result.error || 'Unknown error'));
+            const textarea = document.getElementById("edit-project-description");
+            const editor = document.querySelector("[data-quill-editor='edit-project-description-wysiwyg-editor']");
+            if (editor && textarea) {
+                const quill = Quill.find(editor);
+                if (quill) {
+                    textarea.value = quill.root.innerHTML;
                 }
             }
-        }
+
+            const formData = new FormData(editProjectForm);
+
+            const response = await fetch("/admin/projects/update", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                window.location.reload(); // 🔄 Uppdatera sidan så man ser förändringen direkt
+            } else {
+                alert("Kunde inte uppdatera projekt: " + (result.error ?? "Okänt fel."));
+            }
+        });
+    }
+
+    // ---------------------------------------------
+    // FILTRERING AV PROJEKTKORT
+    // ---------------------------------------------
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const status = btn.getAttribute('data-status');
+
+            document.querySelectorAll('.project.card').forEach(card => {
+                const cardStatus = card.getAttribute('data-status');
+
+                if (status === 'all' || cardStatus === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
     });
+
+
 
 });

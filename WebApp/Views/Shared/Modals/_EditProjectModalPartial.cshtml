@@ -7,28 +7,37 @@
             <button type="button" class="btn-close" data-type="close" data-target="#edit-project-modal"></button>
         </div>
         <div class="card-body">
-            <form asp-controller="" asp-action="" method="post" novalidate>
-                <div class="image-preview-container">
-                    <img src="/images/add-project-logo.svg" alt="">
-                </div>
+            <form id="edit-project-form" asp-controller="Projects" asp-action="Update" method="post" novalidate>
+                    <div class="image-preview-container">
+                        <img src="/images/add-project-logo.svg" alt="">
+                    </div>
+
+                <input type="hidden" asp-for="Id" />
 
                 <div class="form-group">
                     <label class="form-label">Project Name</label>
-                    <input class="form-input" type="" placeholder="Project Name">
+                    <input class="form-input" asp-for="ProjectName" placeholder="Project Name" />
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Client Name</label>
-                    <input class="form-input" type="" placeholder="Client Name">
+                    <label class="form-label">Client</label>
+
+                    <!-- Debugg: visa klienter -->
+                    @foreach (var client in Model.Clients)
+                    {
+                        <div>@client.Text (@client.Value)</div>
+                    }
+
+                    <!-- Dropdown -->
+                    <select class="form-input" asp-for="ClientId" asp-items="Model.Clients">
+                        <option value="">-- Select Client --</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Description</label>
+                    <textarea asp-for="Description" id="edit-project-description" class="hide-textarea"></textarea>
 
-                    <!-- Hidden textarea that gets synced -->
-                    <textarea id="edit-project-description" class="hide-textarea"></textarea>
-
-                    <!-- Quill editor with dynamic attributes -->
                     <div id="edit-project-description-wysiwyg-editor"
                          class="wysiwyg-editor"
                          data-quill-editor="edit-project-description-wysiwyg-editor"
@@ -36,7 +45,6 @@
                          data-quill-target="edit-project-description">
                     </div>
 
-                    <!-- Toolbar -->
                     <div id="edit-project-description-wysiwyg-toolbar" class="wysiwyg-toolbar">
                         <span class="ql-formats">
                             <button class="ql-bold"></button>
@@ -61,11 +69,11 @@
                 <div class="form-horizontal-group">
                     <div class="form-group">
                         <label class="form-label">Start Date</label>
-                        <input class="form-input" type="date">
+                        <input class="form-input" asp-for="StartDate" type="date" />
                     </div>
                     <div class="form-group">
                         <label class="form-label">End Date</label>
-                        <input class="form-input" type="date">
+                        <input class="form-input" asp-for="EndDate" type="date" />
                     </div>
                 </div>
 
@@ -73,11 +81,19 @@
                     <label class="form-label">Budget</label>
                     <div class="form-input-extended">
                         <i class="fa-solid fa-dollar-sign"></i>
-                        <input class="form-input" type="" placeholder="0">
+                        <input class="form-input" asp-for="Budget" type="number" placeholder="0" />
                     </div>
                 </div>
 
-                <button class="btn btn-blue" id="btn-create">Create</button>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-input" asp-for="StatusId">
+                        <option value="1">Started</option>
+                        <option value="2">Completed</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-blue">Save</button>
             </form>
         </div>
     </div>
