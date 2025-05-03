@@ -226,6 +226,8 @@ a {
         grid-area: sidebar;
         border-right: 1px solid var(--color-border-300);
         padding: 0 1rem;
+        width: 100%;
+        min-width: 13rem;
     }
 
     .portal > .header {
@@ -267,6 +269,7 @@ a {
 .account-name {
     color: var(--account-name-text-color);
     border-radius: var(--border-radius);
+    border: none;
     padding: 0rem .6rem;
     height: 3.5rem;
     width: 100%;
@@ -279,6 +282,7 @@ a {
     gap: .7rem;
     transition: background-color 0.1s ease-in-out, border-color 0.1s ease-in-out, color 0.1s ease-in-out;
     cursor: pointer;
+    background-color: var(--transparent);
 }
 
     .account-name img {
@@ -288,9 +292,6 @@ a {
         border-radius: 50%;
     }
 
-    .account-name:hover {
-        background-color: var(--account-name-background-color);
-    }
 
 /* Logotype */
 .logotype {
@@ -390,6 +391,7 @@ a {
     gap: 0.5rem;
     background-color: var(--transparent);
     border: none;
+    text-decoration: none;
     border-radius: 8px;
     padding: 0rem .6rem;
     height: 3.5rem;
@@ -400,6 +402,7 @@ a {
 
     .btn-logout:hover {
         background-color: var(--btn-gray-background-color);
+        text-decoration: none;
     }
 
 .btn-projects {
@@ -416,6 +419,7 @@ a {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    box-sizing: border-box;
 }
 
 .create-account-btn {
@@ -431,7 +435,7 @@ a {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 0.5rem 0;
+    padding: 0.1rem 0;
     position: relative;
 }
 
@@ -535,7 +539,7 @@ a {
 
 .wysiwyg-toolbar {
     position: absolute;
-    bottom: 8px;
+    bottom: 2px;
     width: 100%;
     border: 1px solid var(--color-border-100) !important;
 }
@@ -616,7 +620,16 @@ a {
 .card-body {
     display: flex;
     flex-direction: column;
+    padding-top: 0rem;
+    padding-bottom: .5rem;
+
 }
+
+.card-body.card-height {
+    padding-top: 1rem;
+    height: 8rem;
+}
+
 
 .card-footer {
     background-color: var(--transparent);
@@ -740,6 +753,7 @@ a {
     padding-bottom: 0.3rem;
 }
 
+
 .dropdown-footer {
     margin: 0 2rem;
 }
@@ -771,6 +785,9 @@ a {
         visibility: visible;
         pointer-events: auto;
     }
+
+
+
 
 /* Projects Page */
 #projects {
@@ -1017,3 +1034,26 @@ a {
                 border-bottom-left-radius: 0;
                 border-bottom-right-radius: 0;
             }
+
+
+
+
+.dropdown-hover {
+    background-color: var(--transparent);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--border-radius);
+    padding: 0.6rem 0.8rem;
+    width: 100%;
+    text-decoration: none;
+}
+
+    .dropdown-hover:hover {
+        background-color: var(--gray-300);
+        text-decoration: none;
+    }

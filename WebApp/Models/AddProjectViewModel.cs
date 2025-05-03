@@ -8,25 +8,18 @@ public class AddProjectViewModel
     [Required]
     public string ProjectName { get; set; } = null!;
 
-
-    public string? ClientId { get; set; }
-
-
-
-    public string? ClientName { get; set; }
+    [Required]
+    public string ClientName { get; set; } = null!;
 
     public string? Description { get; set; }
 
     [Required]
-    public DateTime StartDate { get; set; }
+    public DateTime? StartDate { get; set; }
 
     public DateTime? EndDate { get; set; }
 
     public decimal? Budget { get; set; }
 
     [Required]
-    public int? StatusId { get; set; }
-
-
-
+    public int StatusId { get; set; }
 }

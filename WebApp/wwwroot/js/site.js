@@ -152,16 +152,11 @@
             }
 
             // Fyll klient-dropdown
-            const clientSelect = document.querySelector("#edit-project-modal select[name='ClientId']");
-            clientSelect.innerHTML = '<option value="">-- Select Client --</option>';
-            data.clients.forEach(client => {
-                const option = document.createElement("option");
-                option.value = client.id;
-                option.textContent = client.name;
-                if (client.id === data.project.clientId)
-                    option.selected = true;
-                clientSelect.appendChild(option);
-            });
+            const clientNameInput = document.querySelector("#edit-project-modal input[name='ClientName']");
+            if (clientNameInput) {
+                clientNameInput.value = data.project.clientName ?? "";
+            }
+
 
             // Visa modalen
             document.querySelector("#edit-project-modal").classList.add("show");
@@ -258,6 +253,26 @@
             });
         });
     });
+
+    // ---------------------------------------------
+    // TRIMMA FÖRHANDSBESKRIVNINGAR PÅ CARDS
+    // ---------------------------------------------
+    document.querySelectorAll('.project-description').forEach(el => {
+        const rawHtml = el.innerHTML;
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = rawHtml;
+        const plainText = tempDiv.textContent || tempDiv.innerText || "";
+
+        const charLimit = 120;
+        const truncated = plainText.length > charLimit
+            ? plainText.slice(0, charLimit).trim() + "…"
+            : plainText.trim();
+
+        el.textContent = truncated;
+    });
+
+
 
 
 

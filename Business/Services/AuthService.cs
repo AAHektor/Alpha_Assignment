@@ -57,14 +57,42 @@ public class AuthService(IUserService userService, SignInManager<UserEntity> sig
     public async Task<AuthResult> SignUpAsync(SignUpFormData formData)
     {
         if (formData == null)
-            return new AuthResult { Succeeded = false, StatusCode = 400, Error = "Not all required fields are supplied. " };
+            return new AuthResult { Succeeded = false, StatusCode = 400, Error = "Not all required fields are supplied." };
 
         var result = await _userService.CreateUserAsync(formData);
-        return result.Succeeded
-            ? new AuthResult { Succeeded = true, StatusCode = 201 }
-            : new AuthResult { Succeeded = false, StatusCode = 400, Error = result.Error };
 
+        if (!result.Succeeded || result.User == null)
+        {
+            return new AuthResult
+            {
+                Succeeded = false,
+                StatusCode = 400,
+                Error = result.Error ?? "Could not create user"
+            };
+        }
+
+        var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, result.User.Id),
+        new Claim(ClaimTypes.Email, result.User.Email ?? ""),
+        new Claim("FullName", result.User.FullName ?? "")
+    };
+
+        var identity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await _signInManager.Context.SignInAsync(IdentityConstants.ApplicationScheme, principal);
+
+        return new AuthResult
+        {
+            Succeeded = true,
+            StatusCode = 201,
+            User = result.User
+        };
     }
+
+
+
 
     public async Task<AuthResult> SignOutAsync()
     {

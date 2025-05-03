@@ -209,8 +209,10 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
                 StartDate = entity.StartDate,
                 EndDate = entity.EndDate,
                 Budget = entity.Budget,
+                Client = entity.Client,
                 ClientId = entity.ClientId,
-                StatusId = entity.StatusId
+                ClientName = entity.Client.DisplayName,
+                StatusId = entity.StatusId,
             }
         };
     }

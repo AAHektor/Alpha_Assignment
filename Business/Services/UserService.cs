@@ -93,8 +93,10 @@ public class UserService(IUserRepository userRepository, UserManager<UserEntity>
             return new UserResult
             {
                 Succeeded = true,
-                StatusCode = 201
+                StatusCode = 201,
+                User = userEntity 
             };
+
         }
         catch (Exception ex)
         {

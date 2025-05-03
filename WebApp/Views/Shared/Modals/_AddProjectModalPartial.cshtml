@@ -8,22 +8,22 @@
         </div>
         <div class="card-body">
             <form id="add-project-form" asp-controller="Projects" asp-action="Add" method="post" novalidate>
-            <input type="hidden" name="ClientId" value="" />
                 <div class="image-preview-container">
                     <img src="/images/add-project-logo.svg" alt="">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Project Name</label>
-                    <input class="form-input" name="ProjectName" type="text" placeholder="Project Name">
+                    <input class="form-input" asp-for="ProjectName" type="text" placeholder="Project Name">
 
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Client Name</label>
-                    <input class="form-input" name="ClientName" type="text" placeholder="Client Name">
-
+                    <label class="form-label">Client</label>
+                    <input class="form-input" asp-for="ClientName" value="@Model.ClientName" placeholder="Enter client name" />
                 </div>
+
+
 
                 <div class="form-group">
                     <label class="form-label">Description</label>
@@ -65,11 +65,11 @@
                 <div class="form-horizontal-group">
                     <div class="form-group">
                         <label class="form-label">Start Date</label>
-                        <input class="form-input" name="StartDate" type="date">
+                        <input class="form-input" asp-for="StartDate" type="date">
                     </div>
                     <div class="form-group">
                         <label class="form-label">End Date</label>
-                        <input class="form-input" name="EndDate" type="date">
+                        <input class="form-input" asp-for="EndDate" type="date">
                     </div>
                 </div>
 
@@ -77,16 +77,15 @@
                     <label class="form-label">Budget</label>
                     <div class="form-input-extended">
                         <i class="fa-solid fa-dollar-sign"></i>
-                        <input class="form-input" name="Budget" type="number" placeholder="0">
+                        <input class="form-input" asp-for="Budget" type="number" placeholder="0">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Status</label>
-                    <select class="form-input" name="StatusId">
+                    <select class="form-input" asp-for="StatusId">
                         <option value="1">Started</option>
-                        <option value="2">In Progress</option>
-                        <option value="3">Completed</option>
+                        <option value="2">Completed</option>
                     </select>
                 </div>
 

@@ -5,14 +5,11 @@ namespace Presentation.Models
 {
     public class EditProjectViewModel
     {
-
         [Required]
         public string Id { get; set; } = null!;
 
         [Required]
         public string ProjectName { get; set; } = null!;
-
-
 
         public string? Description { get; set; }
 
@@ -24,10 +21,7 @@ namespace Presentation.Models
         public decimal? Budget { get; set; }
 
         [Required]
-        public string ClientId { get; set; } = null!;
-
-        public List<SelectListItem> Clients { get; set; } = new();
-
+        public string ClientName { get; set; } = null!; 
 
         [Required]
         public int StatusId { get; set; }

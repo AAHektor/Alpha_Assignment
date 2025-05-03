@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Presentation.Models;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -31,10 +32,8 @@ namespace Presentation.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var projectsResult = await _projectService.GetProjectsByUserAsync(userId);
-
 
             var viewModel = new ProjectsViewModel
             {
@@ -47,42 +46,39 @@ namespace Presentation.Controllers
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
                     Budget = p.Budget,
-                    Status = p.Status.StatusName,
-                    StatusId = p.StatusId
-                }).ToList()
+                    StatusId = p.StatusId,
+                    Status = new Status
+                    {
+                        Id = p.Status.Id,
+                        StatusName = p.Status.StatusName
+                    },
+                }).ToList(),
+                AddProjectFormData = new AddProjectViewModel()
             };
 
             return View(viewModel);
         }
 
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(AddProjectViewModel model)
         {
-            ModelState.Remove("ClientId");
-
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, debugStatus = 1, error = "ModelState invalid", modelState = ModelState });
             }
 
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            string clientId;
+            string? clientId = null;
 
-            if (!string.IsNullOrWhiteSpace(model.ClientId) && Guid.TryParse(model.ClientId, out _))
+            if (!string.IsNullOrWhiteSpace(model.ClientName))
             {
-                // ClientId är redan ett GUID från dropdown
-                clientId = model.ClientId;
-            }
-            else if (!string.IsNullOrWhiteSpace(model.ClientName))
-            {
-                // Sök om klienten redan finns
                 var existingClient = _context.Clients.FirstOrDefault(c => c.DisplayName == model.ClientName.Trim());
 
                 if (existingClient != null)
                 {
-                    clientId = existingClient.Id; // ✅ Använd befintligt ID
+                    clientId = existingClient.Id;
                 }
                 else
                 {
@@ -93,32 +89,31 @@ namespace Presentation.Controllers
                     };
                     _context.Clients.Add(newClient);
                     await _context.SaveChangesAsync();
-                    clientId = newClient.Id; // ✅ Använd nytt ID
+                    clientId = newClient.Id;
                 }
             }
             else
             {
-                return Json(new { success = false, error = "Ingen klient vald eller angiven." });
+                return Json(new { success = false, error = "Ingen klient angiven." });
             }
-
 
             var formData = new AddProjectFormData
             {
                 ProjectName = model.ProjectName,
-                ClientId = clientId,
+                ClientId = clientId!,
                 Description = model.Description,
-                StartDate = model.StartDate,
+                StartDate = model.StartDate!.Value,
                 EndDate = model.EndDate,
                 Budget = model.Budget,
-                StatusId = model.StatusId ?? 1,
+                StatusId = model.StatusId,
                 UserId = userId
             };
 
             var result = await _projectService.CreateProjectAsync(formData);
 
             return Json(new { success = result.Succeeded, error = result.Error });
-
         }
+
 
 
 
@@ -128,15 +123,34 @@ namespace Presentation.Controllers
             if (!ModelState.IsValid)
                 return Json(new { success = false, error = "Invalid data" });
 
+            string clientId;
+
+            var existingClient = _context.Clients.FirstOrDefault(c => c.DisplayName == model.ClientName.Trim());
+            if (existingClient != null)
+            {
+                clientId = existingClient.Id;
+            }
+            else
+            {
+                var newClient = new ClientEntity
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    DisplayName = model.ClientName.Trim()
+                };
+                _context.Clients.Add(newClient);
+                await _context.SaveChangesAsync();
+                clientId = newClient.Id;
+            }
+
             var updateFormData = new UpdateProjectFormData
             {
                 Id = model.Id,
                 ProjectName = model.ProjectName,
                 Description = model.Description,
-                StartDate = model.StartDate.Value,
+                StartDate = model.StartDate!.Value,
                 EndDate = model.EndDate,
                 Budget = model.Budget,
-                ClientId = model.ClientId,
+                ClientId = clientId,
                 StatusId = model.StatusId
             };
 
@@ -144,6 +158,7 @@ namespace Presentation.Controllers
 
             return Json(new { success = result.Succeeded });
         }
+
 
         [HttpPost("delete")]
         public async Task<IActionResult> Delete([FromBody] DeleteProjectRequestViewModel request)
@@ -158,25 +173,23 @@ namespace Presentation.Controllers
         public async Task<IActionResult> Edit(string id)
         {
             var projectResult = await _projectService.GetProjectByIdAsync(id);
-
             if (!projectResult.Succeeded || projectResult.Result == null)
                 return NotFound();
 
             var project = projectResult.Result;
 
-
             var model = new EditProjectViewModel
             {
                 Id = project.Id,
                 ProjectName = project.ProjectName,
-                ClientId = project.ClientId,
                 Description = project.Description,
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 Budget = project.Budget,
                 StatusId = project.StatusId,
-                Clients = await GetClientsSelectListAsync()
+                ClientName = project.Client.DisplayName
             };
+
 
             return View(model);
         }
@@ -198,14 +211,26 @@ namespace Presentation.Controllers
             if (!projectResult.Succeeded || projectResult.Result == null)
                 return NotFound();
 
-            var clients = await _clientService.GetAllClientsAsync();
+            var project = projectResult.Result;
 
             return Json(new
             {
-                project = projectResult.Result,
-                clients = clients
+                project = new
+                {
+                    id = project.Id,
+                    projectName = project.ProjectName,
+                    description = project.Description,
+                    startDate = project.StartDate,
+                    endDate = project.EndDate,
+                    budget = project.Budget,
+                    statusId = project.StatusId,
+                    clientName = project.Client?.DisplayName 
+                }
             });
         }
+
+
+
 
     }
 

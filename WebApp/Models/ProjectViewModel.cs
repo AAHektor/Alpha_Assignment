@@ -1,4 +1,6 @@
-﻿namespace Presentation.Models;
+﻿using Data.Models;
+
+namespace Presentation.Models;
 
 public class ProjectViewModel
 {
@@ -9,7 +11,7 @@ public class ProjectViewModel
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public decimal? Budget { get; set; }
-    public string Status { get; set; } = null!;
+    public Status Status { get; set; }
     public int StatusId { get; set; }
 
 }

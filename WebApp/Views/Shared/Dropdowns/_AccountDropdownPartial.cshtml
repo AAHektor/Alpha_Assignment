@@ -6,12 +6,12 @@
     </button>
     <div id="account-dropdown" class="dropdown">
         <div class="dropdown-header">
-            <div class="account-name">
+            <button class="account-name dropdown-hover">
                 <img src="/images/users/user-template-male-green.svg" alt="template-avatar">
                 <span>@User.FindFirst("FullName")?.Value</span>
-            </div>
+            </button>
             <div class="dropdown-body">
-                <a asp-controller="Auth" asp-action="Logout" class="btn-logout">
+                <a asp-controller="Auth" asp-action="Logout" class="btn-logout dropdown-hover">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Logout</span>
                 </a>

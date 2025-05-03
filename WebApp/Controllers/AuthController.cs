@@ -1,17 +1,24 @@
 ﻿using Business.Models;
 using Business.Services;
+using Data.Entities;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
+        private readonly SignInManager<UserEntity> _signInManager;
 
-        public AuthController(IAuthService authService)
+
+        public AuthController(IAuthService authService, SignInManager<UserEntity> signInManager)
         {
             _authService = authService;
+            _signInManager = signInManager;
         }
 
 
@@ -38,9 +45,22 @@ namespace Presentation.Controllers
 
             var result = await _authService.SignUpAsync(signUpFormData);
 
-            if (result.Succeeded)
+            if (result.Succeeded && result.User is not null)
             {
-                return RedirectToAction("Login", "Auth");
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, result.User.Id),
+                    new Claim(ClaimTypes.Email, result.User.Email ?? ""),
+                    new Claim("FullName", result.User.FullName ?? "")
+                };
+
+                var identity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
+
+
+                return RedirectToAction("Index", "Projects", new { area = "admin" });
             }
 
             ViewBag.ErrorMessage = result.Error;
