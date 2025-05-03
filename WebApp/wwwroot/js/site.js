@@ -164,13 +164,87 @@
     });
 
     // ---------------------------------------------
+    // ADD PROJEKT VALIDATION
+    // ---------------------------------------------
+    function validateAddProjectForm() {
+        const form = document.getElementById("add-project-form");
+        if (!form) return false;
+
+        let isValid = true;
+
+        const projectName = form.querySelector('[name="ProjectName"]');
+        const clientName = form.querySelector('[name="ClientName"]');
+        const description = document.getElementById("add-project-description"); // ✅ fortfarande referens, men ingen validering
+        const startDate = form.querySelector('[name="StartDate"]');
+        const endDate = form.querySelector('[name="EndDate"]');
+        const budget = form.querySelector('[name="Budget"]');
+        const status = form.querySelector('[name="StatusId"]');
+
+        form.querySelectorAll(".form-error").forEach(el => el.remove());
+        form.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+
+        function showError(input, message) {
+            const error = document.createElement("div");
+            error.className = "form-error";
+            error.textContent = message;
+
+            const group = input.closest(".form-group");
+            if (group) {
+                group.appendChild(error); // 🔧 Placera inuti .form-group, inte efter
+            } else {
+                input.insertAdjacentElement("afterend", error);
+            }
+
+            input.classList.add("is-invalid");
+            isValid = false;
+        }
+
+
+
+        if (!projectName.value.trim()) {
+            showError(projectName, "Project name is required");
+        }
+
+        if (!clientName.value.trim()) {
+            showError(clientName, "Client name is required");
+        }
+
+        // 🟡 description-fältet är inte längre required
+
+        if (!startDate.value) {
+            showError(startDate, "Start date is required");
+        }
+
+        if (!endDate.value) {
+            showError(endDate, "End date is required");
+        } else if (startDate.value && new Date(endDate.value) < new Date(startDate.value)) {
+            showError(endDate, "End date must be after start date");
+        }
+
+        if (!budget.value.trim()) {
+            showError(budget, "Budget is required");
+        }
+
+        if (!status.value || (status.value !== "1" && status.value !== "2")) {
+            showError(status, "Please select a valid status");
+        }
+
+        return isValid;
+    }
+
+
+    // ---------------------------------------------
     // FORMULÄRINLÄMNING: Skicka POST och redirecta (ADD)
     // ---------------------------------------------
     const addProjectForm = document.getElementById("add-project-form");
     if (addProjectForm) {
         addProjectForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // ⛔ alltid stoppa först
 
+            // ✅ Kör JS-validering innan något annat
+            if (!validateAddProjectForm()) return;
+
+            // 🔄 Synka Quill-data till textarea
             const textarea = document.getElementById("add-project-description");
             const editor = document.querySelector("[data-quill-editor='add-project-description-wysiwyg-editor']");
             if (editor && textarea) {
@@ -192,10 +266,18 @@
             if (result.success) {
                 window.location.href = "/admin/projects";
             } else {
-                alert("Kunde inte skapa projekt: " + (result.error ?? "Okänt fel."));
+                const errorContainer = document.createElement("div");
+                errorContainer.className = "form-error text-danger mt-2";
+                errorContainer.textContent = result.error ?? "Something went wrong. Please check your input.";
+
+                const formTop = addProjectForm.querySelector(".card-body");
+                if (formTop && !formTop.querySelector(".form-error")) {
+                    formTop.prepend(errorContainer);
+                }
             }
         });
     }
+
 
     // ---------------------------------------------
     // FORMULÄRINLÄMNING: Skicka POST och redirecta (EDIT)
@@ -399,6 +481,7 @@
     });
 
 
+    
 
 
 
