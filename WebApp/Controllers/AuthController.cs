@@ -79,14 +79,12 @@ namespace Presentation.Controllers
 
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInViewModel model, string returnUrl = "/admin/projects")
-
         {
             ViewBag.ErrorMessage = null;
             ViewBag.ReturnUrl = returnUrl;
 
-
             if (!ModelState.IsValid)
-                return View("SignIn", model); ;
+                return View("SignIn", model);
 
             var signInFormData = new SignInFormData
             {
@@ -101,9 +99,10 @@ namespace Presentation.Controllers
                 return LocalRedirect(returnUrl);
             }
 
-            ViewBag.ErrorMessage = result.Error;
+            ViewBag.ErrorMessage = "Email or password is incorrect";
             return View("SignIn", model);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Logout()
