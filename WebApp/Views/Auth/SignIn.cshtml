@@ -7,20 +7,19 @@
 
 <section id="login">
     <div class="card">
-        <div class="card-header"><h1>Login</h1></div>
+        <div class="card-header">
+            <h1>Login</h1>
+        </div>
         <div class="card-body">
-
-            <form method="post" asp-controller="Auth" asp-action="SignIn" novalidate>
-
+            <form id="signin-form" method="post" asp-controller="Auth" asp-action="SignIn" novalidate>
                 <div class="form-group">
                     <label class="form-label" asp-for="Email"></label>
-                    <input class="form-input" asp-for="Email">
-                    <span asp-validation-for="Email"></span>
+                    <input class="form-input" asp-for="Email" type="email" id="email" />
                 </div>
+
                 <div class="form-group">
                     <label class="form-label" asp-for="Password"></label>
-                    <input class="form-input" asp-for="Password">
-                    <span asp-validation-for="Password"></span>
+                    <input class="form-input" asp-for="Password" type="password" id="password" />
                 </div>
 
                 <div class="form-checkbox-group">
@@ -32,10 +31,9 @@
                 </div>
 
                 <button type="submit" class="btn btn-blue" id="login-account-btn">Log In</button>
-
             </form>
-
         </div>
+
         <div class="card-footer">
             Don't have an account? <a asp-controller="Auth" asp-action="SignUp">Sign up</a>
         </div>

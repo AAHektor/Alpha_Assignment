@@ -273,6 +273,139 @@
     });
 
 
+    // ---------------------------------------------
+    // SIGNIN VALIDATION
+    // ---------------------------------------------
+    window.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("signin-form");
+        console.log("🔍 Form hittad?", form);
+
+        if (!form) return;
+
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+
+        form.addEventListener("submit", function (e) {
+            console.log("🚀 Submit-triggad");
+
+            let isValid = true;
+
+            form.querySelectorAll(".form-error").forEach(el => el.remove());
+            form.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+
+            function showError(input, message) {
+                console.log(`❌ Fel på: ${input.name} → ${message}`);
+                const error = document.createElement("div");
+                error.className = "form-error";
+                error.textContent = message;
+                input.classList.add("is-invalid");
+                input.insertAdjacentElement("afterend", error);
+                isValid = false;
+            }
+
+            if (!email.value.trim()) {
+                showError(email, "Email is required");
+            } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(email.value)) {
+                showError(email, "Enter a valid email");
+            }
+
+            if (!password.value.trim()) {
+                showError(password, "Password is required");
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                console.log("Formulär EJ skickat pga valideringsfel");
+            } else {
+                console.log("Form OK – skickas");
+            }
+        });
+    });
+    // ---------------------------------------------
+    // SIGNUP VALIDATION
+    // ---------------------------------------------
+    window.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("signup-form");
+        if (!form) return;
+
+        const fullName = document.getElementById("fullname");
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+        const confirmPassword = document.getElementById("confirmPassword");
+        const terms = document.getElementById("terms");
+        const termsErrorContainer = document.getElementById("terms-error-container");
+
+        form.addEventListener("submit", function (e) {
+            let isValid = true;
+
+            // Rensa tidigare fel
+            form.querySelectorAll(".form-error").forEach(el => el.remove());
+            form.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+            if (termsErrorContainer) termsErrorContainer.innerHTML = "";
+
+            function showError(input, message) {
+                const error = document.createElement("div");
+                error.className = "form-error";
+                error.textContent = message;
+                input.classList.add("is-invalid");
+                input.insertAdjacentElement("afterend", error);
+                isValid = false;
+            }
+
+            // Full name
+            if (!fullName.value.trim()) {
+                showError(fullName, "Full name is required");
+            } else if (!/^[a-zA-ZåäöÅÄÖ\s\-']+$/.test(fullName.value)) {
+                showError(fullName, "Only letters, spaces, hyphens and apostrophes are allowed");
+            }
+
+            // Email
+            if (!email.value.trim()) {
+                showError(email, "Email is required");
+            } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(email.value)) {
+                showError(email, "Enter a valid email address");
+            }
+
+            // Password
+            if (!password.value.trim()) {
+                showError(password, "Password is required");
+            } else if (password.value.length < 6) {
+                showError(password, "Password must be at least 6 characters");
+            } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password.value)) {
+                showError(password, "Password must include uppercase, lowercase and a number");
+            }
+
+
+            // Confirm Password
+            if (!confirmPassword.value.trim()) {
+                showError(confirmPassword, "Please confirm your password");
+            } else if (confirmPassword.value !== password.value) {
+                showError(confirmPassword, "Passwords do not match");
+            }
+
+            // Terms checkbox – hanteras separat
+            if (!terms.checked && termsErrorContainer) {
+                const error = document.createElement("div");
+                error.className = "form-error";
+                error.textContent = "You must accept the terms";
+                termsErrorContainer.appendChild(error);
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault(); // Stop form submission
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
 
 
 

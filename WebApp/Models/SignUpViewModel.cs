@@ -6,6 +6,7 @@ namespace Presentation.Models
     {
         [Required]
         [DataType(DataType.Text)]
+        [RegularExpression(@"^[a-zA-ZåäöÅÄÖ\s\-']+$", ErrorMessage = "Full name can only contain letters, spaces, hyphens and apostrophes.")]
         [Display(Name = "Full Name", Prompt = "Enter your full name")]
         public string FullName { get; set; } = null!;
 
@@ -17,6 +18,7 @@ namespace Presentation.Models
 
         [Required]
         [DataType(DataType.Password)]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$", ErrorMessage = "Password must contain uppercase, lowercase, a number, and a special character")]
         [Display(Name = "Password", Prompt = "Enter password")]
         public string Password { get; set; } = null!;
 
