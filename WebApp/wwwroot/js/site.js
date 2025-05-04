@@ -280,12 +280,81 @@
 
 
     // ---------------------------------------------
+    // VALIDERING AV EDIT-PROJEKT FORMULÄR
+    // ---------------------------------------------
+    function validateEditProjectForm() {
+        const form = document.getElementById("edit-project-form");
+        if (!form) return false;
+
+        let isValid = true;
+
+        const projectName = form.querySelector('[name="ProjectName"]');
+        const clientName = form.querySelector('[name="ClientName"]');
+        const startDate = form.querySelector('[name="StartDate"]');
+        const endDate = form.querySelector('[name="EndDate"]');
+        const budget = form.querySelector('[name="Budget"]');
+        const status = form.querySelector('[name="StatusId"]');
+
+        form.querySelectorAll(".form-error").forEach(el => el.remove());
+        form.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+
+        function showError(input, message) {
+            const error = document.createElement("div");
+            error.className = "form-error";
+            error.textContent = message;
+
+            const group = input.closest(".form-group");
+            if (group) {
+                group.appendChild(error); // 🔧 Placera inuti .form-group
+            } else {
+                input.insertAdjacentElement("afterend", error);
+            }
+
+            input.classList.add("is-invalid");
+            isValid = false;
+        }
+
+
+
+        if (!projectName.value.trim()) {
+            showError(projectName, "Project name is required");
+        }
+
+        if (!clientName.value.trim()) {
+            showError(clientName, "Client name is required");
+        }
+
+        if (!startDate.value) {
+            showError(startDate, "Start date is required");
+        }
+
+        if (!endDate.value) {
+            showError(endDate, "End date is required");
+        } else if (startDate.value && new Date(endDate.value) < new Date(startDate.value)) {
+            showError(endDate, "End date must be after start date");
+        }
+
+        if (!budget.value.trim()) {
+            showError(budget, "Budget is required");
+        }
+
+        if (!status.value || (status.value !== "1" && status.value !== "2")) {
+            showError(status, "Please select a valid status");
+        }
+
+        return isValid;
+    }
+
+    // ---------------------------------------------
     // FORMULÄRINLÄMNING: Skicka POST och redirecta (EDIT)
     // ---------------------------------------------
     const editProjectForm = document.getElementById("edit-project-form");
     if (editProjectForm) {
         editProjectForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+
+            // ✅ Validera först
+            if (!validateEditProjectForm()) return;
 
             const textarea = document.getElementById("edit-project-description");
             const editor = document.querySelector("[data-quill-editor='edit-project-description-wysiwyg-editor']");
@@ -306,7 +375,7 @@
             const result = await response.json();
 
             if (result.success) {
-                window.location.reload(); // 🔄 Uppdatera sidan så man ser förändringen direkt
+                window.location.reload(); // 🔄
             } else {
                 alert("Kunde inte uppdatera projekt: " + (result.error ?? "Okänt fel."));
             }
