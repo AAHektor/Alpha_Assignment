@@ -13,6 +13,10 @@ public interface IAuthService
     Task<AuthResult> SignUpAsync(SignUpFormData formData);
 }
 
+/* GENERERAD AV CHATGPT 4o */
+/* Den här koden loggar in en användare: den kollar att inloggningsdatan finns, att */
+/* användaren finns, att lösenordet stämmer, loggar ut tidigare sessioner, skapar nya */
+/* inloggningsclaims och loggar in användaren.*/
 public class AuthService(IUserService userService, SignInManager<UserEntity> signInManager) : IAuthService
 {
     private readonly IUserService _userService = userService;
@@ -31,10 +35,8 @@ public class AuthService(IUserService userService, SignInManager<UserEntity> sig
         if (!checkPassword)
             return new AuthResult { Succeeded = false, StatusCode = 401, Error = "Invalid password" };
 
-        // ✅ Logga ut eventuell gammal användare
         await _signInManager.SignOutAsync();
 
-        // ✅ Skapa nya claims inklusive FullName
         var claims = new List<Claim>
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id),
@@ -53,7 +55,9 @@ public class AuthService(IUserService userService, SignInManager<UserEntity> sig
 
 
 
-
+    /* GENERERAD AV CHATGPT 4o */
+    /* Den här koden registrerar en ny användare: den kollar att all data finns, försöker skapa */
+    /* användaren, och om det lyckas loggar den in användaren direkt med claims. */
     public async Task<AuthResult> SignUpAsync(SignUpFormData formData)
     {
         if (formData == null)

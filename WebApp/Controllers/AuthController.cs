@@ -28,6 +28,11 @@ namespace Presentation.Controllers
              return View();
         }
 
+        /* GENERERAD AV CHATGPT 4o */
+        /* Den här koden hanterar registrering: den kollar om modellen är giltig, skickar */
+        /* registreringsdata till authservice, loggar in användaren om det lyckas, och skickar vidare */
+        /* till projects-sidan*/
+
         [HttpPost]
 
         public async Task<IActionResult> SignUp(SignUpViewModel model)
@@ -75,8 +80,10 @@ namespace Presentation.Controllers
         }
 
 
-
-
+        /* GENERERAD AV CHATGPT 4o */
+        /* Hanterar inloggning av användare */
+        /* Validerar formuläret och skickar inloggningsdata till authservice */
+        /* Vid lyckad inloggning skickas användaren vidare */
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInViewModel model, string returnUrl = "/admin/projects")
         {

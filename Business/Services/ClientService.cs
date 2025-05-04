@@ -49,7 +49,7 @@ public class ClientService(IClientRepository clientRepository, AppDbContext cont
     {
         var clients = await _context.Clients.ToListAsync();
 
-        Console.WriteLine("==== CLIENTER FUNNA ====");
+        Console.WriteLine("Clients found");
         foreach (var c in clients)
         {
             Console.WriteLine($"{c.Id} - {c.DisplayName}");
