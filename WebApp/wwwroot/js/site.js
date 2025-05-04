@@ -136,7 +136,6 @@
             const res = await fetch(`/admin/projects/api/project/${projectId}`);
             const data = await res.json();
 
-            // Fyll formulärfält
             document.querySelector("#edit-project-modal input[name='Id']").value = data.project.id;
             document.querySelector("#edit-project-modal input[name='ProjectName']").value = data.project.projectName;
             document.querySelector("#edit-project-modal textarea[name='Description']").value = data.project.description || "";
@@ -151,20 +150,20 @@
                 document.getElementById("edit-project-description").value = data.project.description || "";
             }
 
-            // Fyll klient-dropdown
             const clientNameInput = document.querySelector("#edit-project-modal input[name='ClientName']");
             if (clientNameInput) {
                 clientNameInput.value = data.project.clientName ?? "";
             }
 
 
-            // Visa modalen
             document.querySelector("#edit-project-modal").classList.add("show");
         });
     });
 
     // ---------------------------------------------
-    // ADD PROJEKT VALIDATION
+    // ADD PROJEKT VALIDATION - GENERERAT AV CHATGPT 4o
+    // Denna funktion validerar ett formulär för att lägga till ett projekt. 
+    // Den kontrollerar att alla obligatoriska fält är ifyllda, att datum är i rätt ordning, och att statusen är giltig
     // ---------------------------------------------
     function validateAddProjectForm() {
         const form = document.getElementById("add-project-form");
@@ -174,7 +173,7 @@
 
         const projectName = form.querySelector('[name="ProjectName"]');
         const clientName = form.querySelector('[name="ClientName"]');
-        const description = document.getElementById("add-project-description"); // ✅ fortfarande referens, men ingen validering
+        const description = document.getElementById("add-project-description"); 
         const startDate = form.querySelector('[name="StartDate"]');
         const endDate = form.querySelector('[name="EndDate"]');
         const budget = form.querySelector('[name="Budget"]');
@@ -190,7 +189,7 @@
 
             const group = input.closest(".form-group");
             if (group) {
-                group.appendChild(error); // 🔧 Placera inuti .form-group, inte efter
+                group.appendChild(error); 
             } else {
                 input.insertAdjacentElement("afterend", error);
             }
@@ -209,7 +208,6 @@
             showError(clientName, "Client name is required");
         }
 
-        // 🟡 description-fältet är inte längre required
 
         if (!startDate.value) {
             showError(startDate, "Start date is required");
@@ -234,7 +232,9 @@
 
 
     // ---------------------------------------------
-    // FORMULÄRINLÄMNING: Skicka POST och redirecta (ADD)
+    // FORMULÄRINLÄMNING: Skicka POST och redirecta (ADD) - GENERERAT AV CHATGPT 4o
+    // Den förhindrar formulärinlämning, validerar fält, 
+    // skickar datan via fetch(), och visar fel eller omdirigerar vid success.
     // ---------------------------------------------
     const addProjectForm = document.getElementById("add-project-form");
     if (addProjectForm) {
@@ -280,7 +280,9 @@
 
 
     // ---------------------------------------------
-    // VALIDERING AV EDIT-PROJEKT FORMULÄR
+    // VALIDERING AV EDIT-PROJEKT FORMULÄR - GENERERAT AV CHATGPT 4o
+    // Den här koden kollar om alla fält i edit-formuläret är ifyllda rätt. 
+    // Om något saknas eller är fel visas ett felmeddelande, och formuläret stoppas från att skickas.
     // ---------------------------------------------
     function validateEditProjectForm() {
         const form = document.getElementById("edit-project-form");
@@ -305,7 +307,7 @@
 
             const group = input.closest(".form-group");
             if (group) {
-                group.appendChild(error); // 🔧 Placera inuti .form-group
+                group.appendChild(error); 
             } else {
                 input.insertAdjacentElement("afterend", error);
             }
@@ -346,14 +348,16 @@
     }
 
     // ---------------------------------------------
-    // FORMULÄRINLÄMNING: Skicka POST och redirecta (EDIT)
+    // FORMULÄRINLÄMNING: Skicka POST och redirecta (EDIT) - GENERERAT AV CHATGPT 4o
+    // Den här koden stoppar vanlig inlämning av edit-formuläret, kollar att allt är rätt
+    // ifyllt, lägger in Quill-texten i en textarea, skickar datan till servern med
+    // fetch, och laddar om sidan om allt är OK.
     // ---------------------------------------------
     const editProjectForm = document.getElementById("edit-project-form");
     if (editProjectForm) {
         editProjectForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            // ✅ Validera först
             if (!validateEditProjectForm()) return;
 
             const textarea = document.getElementById("edit-project-description");
@@ -375,9 +379,9 @@
             const result = await response.json();
 
             if (result.success) {
-                window.location.reload(); // 🔄
+                window.location.reload();
             } else {
-                alert("Kunde inte uppdatera projekt: " + (result.error ?? "Okänt fel."));
+                alert("Couldn't update project: " + (result.error ?? "Unknown error."));
             }
         });
     }
@@ -406,7 +410,8 @@
     });
 
     // ---------------------------------------------
-    // TRIMMA FÖRHANDSBESKRIVNINGAR PÅ CARDS
+    // TRIMMA FÖRHANDSBESKRIVNINGAR PÅ CARDS - GENERERAT AV CHATGPT 4o
+    // Denna kod trimmar ner texten i projektbeskrivningarna på korten till 120 tecken.
     // ---------------------------------------------
     document.querySelectorAll('.project-description').forEach(el => {
         const rawHtml = el.innerHTML;
@@ -425,11 +430,14 @@
 
 
     // ---------------------------------------------
-    // SIGNIN VALIDATION
+    // SIGNIN VALIDATION - GENERERAT AV CHATGPT 4o
+    // Denna kod körs när sidan laddats klart. Den kollar att e-post och lösenord är ifyllda
+    // och giltiga innan inloggningsformuläret får skickas.
+    // Om något är fel visas felmeddelanden och formuläret stoppas.
     // ---------------------------------------------
     window.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("signin-form");
-        console.log("🔍 Form hittad?", form);
+        console.log("Form found?", form);
 
         if (!form) return;
 
@@ -437,7 +445,7 @@
         const password = document.getElementById("password");
 
         form.addEventListener("submit", function (e) {
-            console.log("🚀 Submit-triggad");
+            console.log("Submit-trigged");
 
             let isValid = true;
 
@@ -445,7 +453,7 @@
             form.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
 
             function showError(input, message) {
-                console.log(`❌ Fel på: ${input.name} → ${message}`);
+                console.log(`Error: ${input.name} → ${message}`);
                 const error = document.createElement("div");
                 error.className = "form-error";
                 error.textContent = message;
@@ -466,14 +474,16 @@
 
             if (!isValid) {
                 e.preventDefault();
-                console.log("Formulär EJ skickat pga valideringsfel");
+                console.log("Form not submitted due to validation errors.");
             } else {
-                console.log("Form OK – skickas");
+                console.log("Form OK – submitting");
             }
         });
     });
     // ---------------------------------------------
-    // SIGNUP VALIDATION
+    // SIGNUP VALIDATION - GENERERAT AV CHATGPT 4o
+    // Den kod kollar att allt i registreringsformuläret är rätt ifyllt: namn, e-post, lösenord, bekräftat lösenord
+    // och att man kryssat i villkorsrutan. Om något är fel visas felmeddelanden och formuläret skickas inte.
     // ---------------------------------------------
     window.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("signup-form");

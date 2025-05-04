@@ -60,6 +60,8 @@ namespace Presentation.Controllers
         }
 
 
+        /* GENERERAD AV CHATGPT 4o */
+        /* koden tar emot projektdata, validerar, hittar eller skapar klient, sparar projektet och svarar med JSON om det lyckades eller inte. */
         [HttpPost("add")]
         public async Task<IActionResult> Add(AddProjectViewModel model)
         {
@@ -94,7 +96,7 @@ namespace Presentation.Controllers
             }
             else
             {
-                return Json(new { success = false, error = "Ingen klient angiven." });
+                return Json(new { success = false, error = "No client specified." });
             }
 
             var formData = new AddProjectFormData
@@ -116,7 +118,8 @@ namespace Presentation.Controllers
 
 
 
-
+        /* GENERERAD AV CHATGPT 4o */
+        /* koden tar emot redigerad projektdata, validerar, hittar eller skapar klient, uppdaterar projektet och skickar tillbaka JSON med resultatet. */
         [HttpPost("update")]
         public async Task<IActionResult> Update(EditProjectViewModel model)
         {
@@ -192,16 +195,6 @@ namespace Presentation.Controllers
 
 
             return View(model);
-        }
-
-        private async Task<List<SelectListItem>> GetClientsSelectListAsync()
-        {
-            var clients = await _clientService.GetAllClientsAsync();
-            return clients.Select(c => new SelectListItem
-            {
-                Value = c.Id,
-                Text = c.Name
-            }).ToList();
         }
 
         [HttpGet("api/project/{id}")]
